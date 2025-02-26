@@ -46,7 +46,7 @@ class PauseView(arcade.View):
                 texture_pressed=TEX_RED_BUTTON_PRESS,
             ),
             anchor_y="center",  # Adjust the vertical position here ("top", "center", "bottom")
-            align_y=0
+            align_y=-75
         )
 
         @button_resume.event("on_click")
@@ -57,6 +57,17 @@ class PauseView(arcade.View):
         def on_click(event):
             self.manager.switch_to_main_menu()
 
+    def on_draw(self):
+        self.clear()
+
+        self.ui.draw()
+
     def on_key_press(self, key, modifiers):
         if key == "esc":
             self.manager.switch_to_game_view()
+
+    def on_show_view(self) -> None:
+        self.ui.enable()
+
+    def on_hide_view(self) -> None:
+        self.ui.disable()
