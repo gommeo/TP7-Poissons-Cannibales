@@ -34,7 +34,7 @@ class PauseView(arcade.View):
                 texture_pressed=TEX_RED_BUTTON_PRESS,
             ),
             anchor_y="center",  # Adjust the vertical position here ("top", "center", "bottom")
-            align_y=0
+            align_y=-75
         )
 
         button_return = anchor.add(
@@ -46,7 +46,7 @@ class PauseView(arcade.View):
                 texture_pressed=TEX_RED_BUTTON_PRESS,
             ),
             anchor_y="center",  # Adjust the vertical position here ("top", "center", "bottom")
-            align_y=-75
+            align_y=0
         )
 
         @button_resume.event("on_click")
