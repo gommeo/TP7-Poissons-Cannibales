@@ -26,20 +26,42 @@ fish_textures = {
 class Fish(arcade.Sprite):
     def __init__(self, player_size):
         super().__init__()
+        self.player_size = player_size
+        self.animation_speed = None
+        self.scale_fish = None
+
+        self.change_x = None
+        self.center_x = None
+        self.center_y = None
+
+        self.colour = None
+        self.textures_idle = None
+        self.textures_swim = None
+        self.current_texture = None
+        self.textures = None
+
+        self.animation_update_time = None
+        self.time_since_last_swap = None
+
+        self.setup()
+
+    def setup(self):
         self.animation_speed = 5
-        self.scale_fish = randint(round(0.2 * player_size), round(3 * player_size))
+        self.scale_fish = randint(round(0.2 * self.player_size), round(3 * self.player_size))
         self.scale = sqrt(self.scale_fish / (width * height))
 
-        self.change_x = choice([10000 / self.scale_fish, -10000 / self.scale_fish])
+        self.change_x = choice([(3000 / self.scale_fish) + 3, (-3000 / self.scale_fish) - 3])
         if self.change_x > 0:
             if self.change_x > 10:
                 self.change_x = 10
-            self.center_x = -sqrt((self.scale_fish * width)/height)/2
+            self.center_x = -sqrt((self.scale_fish * width) / height) / 2
         if self.change_x < 0:
             if self.change_x < -10:
                 self.change_x = -10
-            self.center_x = 1164 + sqrt((self.scale_fish * width)/height)/2
-        self.center_y = randint(ceil(sqrt((self.scale_fish * height)/width)/2), 764 - floor(sqrt((self.scale_fish * width)/height)/2))
+            self.center_x = 1164 + sqrt((self.scale_fish * width) / height) / 2
+
+        self.center_y = randint(ceil(sqrt((self.scale_fish * height) / width) / 2),
+                                764 - floor(sqrt((self.scale_fish * height) / width) / 2))
 
         self.colour = choice(["black", "green", "purple", "red", "yellow"])
 
@@ -55,9 +77,6 @@ class Fish(arcade.Sprite):
 
         self.animation_update_time = 1.0 / self.animation_speed
         self.time_since_last_swap = 0.0
-
-    def setup(self):
-        pass
 
     def on_update(self, delta_time: float = 1 / 60):
         self.time_since_last_swap += delta_time
@@ -77,3 +96,7 @@ class Fish(arcade.Sprite):
 
         if self.textures == self.textures_swim:
             self.center_x += self.change_x
+
+        if self.center_x < -sqrt((self.scale_fish * width)/height) or self.center_x > 1164 + sqrt((self.scale_fish * width)/height):
+            self.remove_from_sprite_lists()
+            del self

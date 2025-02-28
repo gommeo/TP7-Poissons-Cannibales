@@ -16,6 +16,8 @@ class GameView(arcade.View):
 
         self.manager = manager
         self.player_fish_path = player_fish_path
+        self.normal_player = None
+        self.mirrored_player = None
         self.player = None
         self.player_size = None
         self.sprite_list = None
@@ -26,6 +28,8 @@ class GameView(arcade.View):
         self.left = None
         self.right = None
 
+        self.last_key_right = None
+
         self.setup()
 
     def setup(self):
@@ -34,7 +38,9 @@ class GameView(arcade.View):
         self.background.center_y = SCREEN_HEIGHT / 2
 
         self.player_size = 2000
-        self.player = arcade.Sprite(self.player_fish_path, math.sqrt(self.player_size/(width * height)))
+        self.normal_player = arcade.Sprite(self.player_fish_path, math.sqrt(self.player_size/(width * height)))
+        self.mirrored_player = arcade.Sprite(arcade.Texture(GameView.flip_image(self.player_fish_path)), math.sqrt(self.player_size / (width * height)))
+        self.player = self.normal_player
         self.player.center_x = SCREEN_WIDTH / 2
         self.player.center_y = SCREEN_HEIGHT / 2
 
@@ -44,6 +50,8 @@ class GameView(arcade.View):
         self.down = False
         self.left = False
         self.right = False
+
+        self.last_key_right = True
 
     def on_draw(self):
         self.clear()
@@ -58,9 +66,11 @@ class GameView(arcade.View):
     def on_update(self, delta_time):
         self.move_player()
         self.check_boundaries()
+        self.check_direction()
 
         for i in self.sprite_list:
             i.on_update()
+
 
     def move_player(self):
         if self.up:
@@ -77,6 +87,18 @@ class GameView(arcade.View):
 
     def check_boundaries(self):
         pass
+
+    def check_direction(self):
+        x = self.player.center_x
+        y = self.player.center_y
+
+        if not self.last_key_right:
+            self.player = self.normal_player
+        else:
+            self.player = self.mirrored_player
+
+        self.player.center_x = x
+        self.player.center_y = y
 
     @staticmethod
     def flip_image(image_path):
@@ -96,8 +118,12 @@ class GameView(arcade.View):
         if key == arcade.key.A or key == arcade.key.LEFT:
             self.left = True
 
+            self.last_key_right = False
+
         if key == arcade.key.D or key == arcade.key.RIGHT:
             self.right = True
+
+            self.last_key_right = True
 
         if key == arcade.key.SPACE:
             self.sprite_list.append(Fish(self.player_size))
@@ -112,5 +138,17 @@ class GameView(arcade.View):
         if key == arcade.key.A or key == arcade.key.LEFT:
             self.left = False
 
+            if not self.right:
+                self.last_key_right = False
+
+            else:
+                self.last_key_right = True
+
         if key == arcade.key.D or key == arcade.key.RIGHT:
             self.right = False
+
+            if not self.left:
+                self.last_key_right = True
+
+            else:
+                self.last_key_right = False
