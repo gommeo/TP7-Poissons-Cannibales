@@ -1,5 +1,6 @@
 import arcade
-import math
+from math import sqrt
+from random import randint
 from PIL import Image
 from fish_npc import Fish
 
@@ -16,7 +17,9 @@ class GameView(arcade.View):
 
         self.manager = manager
         self.player_fish_path = player_fish_path
+        self.original_player = None
         self.normal_player = None
+        self.flipped_player = None
         self.mirrored_player = None
         self.player = None
         self.player_size = None
@@ -38,8 +41,9 @@ class GameView(arcade.View):
         self.background.center_y = SCREEN_HEIGHT / 2
 
         self.player_size = 2000
-        self.normal_player = arcade.Sprite(self.player_fish_path, math.sqrt(self.player_size/(width * height)))
-        self.mirrored_player = arcade.Sprite(arcade.Texture(GameView.flip_image(self.player_fish_path)), math.sqrt(self.player_size / (width * height)))
+        self.flipped_player = arcade.Texture(GameView.flip_image(self.player_fish_path))
+        self.original_player = self.player_fish_path
+        self.update_size()
         self.player = self.normal_player
         self.player.center_x = SCREEN_WIDTH / 2
         self.player.center_y = SCREEN_HEIGHT / 2
@@ -52,6 +56,10 @@ class GameView(arcade.View):
         self.right = False
 
         self.last_key_right = True
+
+    def update_size(self):
+        self.normal_player = arcade.Sprite(self.original_player, sqrt(self.player_size / (width * height)))
+        self.mirrored_player = arcade.Sprite(self.flipped_player, sqrt(self.player_size / (width * height)))
 
     def on_draw(self):
         self.clear()
@@ -66,11 +74,23 @@ class GameView(arcade.View):
     def on_update(self, delta_time):
         self.move_player()
         self.check_boundaries()
+
+        for fish in self.sprite_list:
+            fish.on_update()
+            if arcade.check_for_collision(fish, self.player):
+                if fish.scale_fish > self.player_size:
+                    if fish.scale_fish > 1.5 * self.player_size:
+                        print(self.player_size)
+                        self.setup()
+                else:
+                    self.player_size += 0.1 * fish.scale_fish
+                    fish.destroy_fish()
+                    self.update_size()
+
         self.check_direction()
 
-        for i in self.sprite_list:
-            i.on_update()
-
+        if randint(1, 30) == 30:
+            self.sprite_list.append(Fish(self.player_size))
 
     def move_player(self):
         if self.up:
@@ -86,7 +106,15 @@ class GameView(arcade.View):
             self.player.center_x += 5
 
     def check_boundaries(self):
-        pass
+        if self.player.center_x < sqrt((self.player_size * width)/height) / 2:
+            self.player.center_x = sqrt((self.player_size * width)/height) / 2
+        elif self.player.center_x > SCREEN_WIDTH - sqrt((self.player_size * width)/height) / 2:
+            self.player.center_x = SCREEN_WIDTH - sqrt((self.player_size * width)/height) / 2
+
+        if self.player.center_y < sqrt((self.player_size * height)/width) / 2:
+            self.player.center_y = sqrt((self.player_size * height)/width) / 2
+        elif self.player.center_y > SCREEN_HEIGHT - sqrt((self.player_size * height)/width) / 2:
+            self.player.center_y = SCREEN_HEIGHT - sqrt((self.player_size * height)/width) / 2
 
     def check_direction(self):
         x = self.player.center_x
@@ -124,9 +152,6 @@ class GameView(arcade.View):
             self.right = True
 
             self.last_key_right = True
-
-        if key == arcade.key.SPACE:
-            self.sprite_list.append(Fish(self.player_size))
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.W or key == arcade.key.UP:

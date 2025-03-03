@@ -98,5 +98,8 @@ class Fish(arcade.Sprite):
             self.center_x += self.change_x
 
         if self.center_x < -sqrt((self.scale_fish * width)/height) or self.center_x > 1164 + sqrt((self.scale_fish * width)/height):
-            self.remove_from_sprite_lists()
-            del self
+            self.destroy_fish()
+
+    def destroy_fish(self):
+        self.remove_from_sprite_lists()
+        del self
