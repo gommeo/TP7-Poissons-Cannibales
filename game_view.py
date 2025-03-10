@@ -32,6 +32,11 @@ class GameView(arcade.View):
         self.right = None
 
         self.last_key_right = None
+        self.running = None
+        self.fish_not_spawned = None
+        self.show_hitbox = None
+        self.last_key = None
+        self.score = None
 
         self.setup()
 
@@ -55,7 +60,12 @@ class GameView(arcade.View):
         self.left = False
         self.right = False
 
+        self.running = True
+        self.fish_not_spawned = 0
         self.last_key_right = True
+        self.show_hitbox = False
+        self.last_key = None
+        self.score = 0
 
     def update_size(self):
         self.normal_player = arcade.Sprite(self.original_player, sqrt(self.player_size / (width * height)))
@@ -68,6 +78,16 @@ class GameView(arcade.View):
         arcade.draw_sprite(self.player)
         self.sprite_list.draw()
 
+        if self.show_hitbox:
+            self.sprite_list.draw_hit_boxes()
+            self.player.draw_hit_box()
+
+        r = arcade.rect.XYWH(100, 720, 100, 30)
+        arcade.draw.draw_rect_filled(r, arcade.csscolor.BROWN)
+
+        affichage = arcade.Text(f"Score: {self.score}", 50, 720, arcade.color.BARBIE_PINK, width=100, align="center")
+        affichage.draw()
+
     def draw_background(self):
         arcade.draw_sprite(self.background)
 
@@ -75,22 +95,30 @@ class GameView(arcade.View):
         self.move_player()
         self.check_boundaries()
 
+        total_fish = 0
+
         for fish in self.sprite_list:
             fish.on_update()
             if arcade.check_for_collision(fish, self.player):
-                if fish.scale_fish > self.player_size:
+                if fish.scale_fish > self.player_size and not self.show_hitbox:
                     if fish.scale_fish > 1.5 * self.player_size:
                         print(self.player_size)
                         self.setup()
                 else:
-                    self.player_size += 0.1 * fish.scale_fish
+                    self.score += round(0.1 * fish.scale_fish)
+                    self.player_size += round(0.1 * fish.scale_fish)
                     fish.destroy_fish()
                     self.update_size()
 
+            total_fish += fish.scale_fish
+
         self.check_direction()
 
-        if randint(1, 30) == 30:
-            self.sprite_list.append(Fish(self.player_size))
+        if total_fish < 200000 and len(self.sprite_list) + self.fish_not_spawned < 20 and self.running:
+            self.fish_not_spawned += 1
+            arcade.schedule_once(self.spawn_fish, randint(0, 5000)/1000)
+
+        self.score += 1
 
     def move_player(self):
         if self.up:
@@ -142,16 +170,32 @@ class GameView(arcade.View):
 
         if key == arcade.key.S or key == arcade.key.DOWN:
             self.down = True
+            self.last_key = "s"
 
         if key == arcade.key.A or key == arcade.key.LEFT:
             self.left = True
 
             self.last_key_right = False
 
+            if self.last_key == "m":
+                self.debug()
+                self.last_key = None
+
         if key == arcade.key.D or key == arcade.key.RIGHT:
             self.right = True
 
             self.last_key_right = True
+
+        if key == arcade.key.I and self.last_key == "s":
+            self.last_key = "i"
+
+        if key == arcade.key.G and self.last_key == "i":
+            self.last_key = "g"
+
+        if key == arcade.key.M and self.last_key == "g":
+            self.last_key = "m"
+
+
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.W or key == arcade.key.UP:
@@ -177,3 +221,16 @@ class GameView(arcade.View):
 
             else:
                 self.last_key_right = False
+
+    def on_show_view(self):
+        self.running = True
+
+    def on_hide_view(self):
+        self.running = False
+
+    def spawn_fish(self, _delta_time):
+        self.sprite_list.append(Fish(self.player_size))
+        self.fish_not_spawned -= 1
+
+    def debug(self):
+        self.show_hitbox = not self.show_hitbox
