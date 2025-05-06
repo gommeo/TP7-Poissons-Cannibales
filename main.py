@@ -1,3 +1,10 @@
+"""
+Oscar Gomme
+Class pour commencer l'application
+TP7-Poissons Cannibales
+"""
+
+
 import arcade
 import os
 import re
@@ -25,12 +32,12 @@ class Manager:
         self.pause_view = None
         self.high_score_view = None
 
-        self.analfin = None
+        self.anal_fin = None
         self.body = None
-        self.dorsalfin = None
+        self.dorsal_fin = None
         self.jaw = None
         self.left_eye = None
-        self.pectoralfin = None
+        self.pectoral_fin = None
         self.right_eye = None
         self.tail = None
 
@@ -58,12 +65,12 @@ class Manager:
             file.close()
             split_content = re.split(r"[\n:]", content)
 
-            self.analfin = split_content[1]
+            self.anal_fin = split_content[1]
             self.body = split_content[3]
-            self.dorsalfin = split_content[5]
+            self.dorsal_fin = split_content[5]
             self.jaw = split_content[7]
             self.left_eye = split_content[9]
-            self.pectoralfin = split_content[11]
+            self.pectoral_fin = split_content[11]
             self.right_eye = split_content[13]
             self.tail = split_content[15]
 
@@ -75,12 +82,12 @@ class Manager:
                 self.high_score = []
 
         else:
-            self.analfin = "black"
+            self.anal_fin = "black"
             self.body = "black"
-            self.dorsalfin = "black"
+            self.dorsal_fin = "black"
             self.jaw = "black"
             self.left_eye = "black"
-            self.pectoralfin = "black"
+            self.pectoral_fin = "black"
             self.right_eye = "black"
             self.tail = "black"
 
@@ -91,7 +98,7 @@ class Manager:
 
         string = ""
         o = self.options_view
-        string += f"analfin:{o.analfin}\nbody:{o.body}\ndorsalfin:{o.dorsalfin}\njaw:{o.jaw}\nleft_eye:{o.left_eye}\npectoralfin:{o.pectoralfin}\nright_eye:{o.right_eye}\ntail:{o.tail}\n"
+        string += f"anal_fin:{o.anal_fin}\nbody:{o.body}\ndorsal_fin:{o.dorsal_fin}\njaw:{o.jaw}\nleft_eye:{o.left_eye}\npectoral_fin:{o.pectoral_fin}\nright_eye:{o.right_eye}\ntail:{o.tail}\n"
 
         for score in self.high_score:
             string += f"{score}\n"
@@ -123,27 +130,25 @@ class Manager:
     def build_fish(self):
         o = self.options_view
 
-        image1 = Image.open(f"./assets/2dfish/body_parts_and_spriter_file/{o.analfin}/anal_fin.png")
+        image1 = Image.open(f"./assets/2dfish/body_parts_and_spriter_file/{o.anal_fin}/anal_fin.png")
         image2 = Image.open(f"./assets/2dfish/body_parts_and_spriter_file/{o.body}/body.png")
-        image3 = Image.open(f"./assets/2dfish/body_parts_and_spriter_file/{o.dorsalfin}/dorsal_fin.png")  # 614x278
-        image4 = Image.open(f"./assets/2dfish/body_parts_and_spriter_file/{o.jaw}/jaw.png")  # 797x420
+        image3 = Image.open(f"./assets/2dfish/body_parts_and_spriter_file/{o.dorsal_fin}/dorsal_fin.png")
+        image4 = Image.open(f"./assets/2dfish/body_parts_and_spriter_file/{o.jaw}/jaw.png")
         image5 = Image.open(f"./assets/2dfish/body_parts_and_spriter_file/{o.left_eye}/left_eye_open.png")
-        image6 = Image.open(f"./assets/2dfish/body_parts_and_spriter_file/{o.pectoralfin}/pectoral_fin.png")
+        image6 = Image.open(f"./assets/2dfish/body_parts_and_spriter_file/{o.pectoral_fin}/pectoral_fin.png")
         image7 = Image.open(f"./assets/2dfish/body_parts_and_spriter_file/{o.right_eye}/right_eye_open.png")
-        image8 = Image.open(f"./assets/2dfish/body_parts_and_spriter_file/{o.tail}/tail.png")  # 270x414
+        image8 = Image.open(f"./assets/2dfish/body_parts_and_spriter_file/{o.tail}/tail.png")
 
-        # Create a blank canvas to hold the combined image
-        canvas_width = 1653  # Adjust canvas size as needed
+        canvas_width = 1653
         canvas_height = 1020
-        canvas = Image.new("RGBA", (canvas_width, canvas_height), (255, 255, 255, 0))  # Transparent canvas
+        canvas = Image.new("RGBA", (canvas_width, canvas_height), (255, 255, 255, 0))
 
-        # Paste images onto the canvas at specific positions
-        canvas.paste(image3, (582, 0), mask=image3)  # Image 3 at (400, 100) with transparency
-        canvas.paste(image8, (1383, 430), mask=image8)  # Image 3 at (400, 100) with transparency
+        canvas.paste(image3, (582, 0), mask=image3)
+        canvas.paste(image8, (1383, 430), mask=image8)
         canvas.paste(image5, (275, 167), mask=image5)
         canvas.paste(image1, (1150, 746), mask=image1)
 
-        canvas.paste(image2, (134, 128), mask=image2)  # Image 1 at (50, 50)
+        canvas.paste(image2, (134, 128), mask=image2)
 
         canvas.paste(image7, (368, 171), mask=image7)
         canvas.paste(image6, (894, 733), mask=image6)

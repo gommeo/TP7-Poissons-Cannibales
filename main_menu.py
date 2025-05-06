@@ -1,3 +1,9 @@
+"""
+Oscar Gomme
+Class pour le menu
+"""
+
+
 import arcade
 from arcade.gui import UIManager, UITextureButton, UIAnchorLayout
 
@@ -16,13 +22,10 @@ class MainMenu(arcade.View):
         self.setup()
 
     def setup(self):
-        # Create a UIManager
         self.ui = UIManager()
 
-        # Create an anchor layout, which can be used to position widgets on screen
         anchor = self.ui.add(UIAnchorLayout())
 
-        # Add a button switch to the other View.
         button_play = anchor.add(
             UITextureButton(
                 text="Play",
@@ -31,7 +34,7 @@ class MainMenu(arcade.View):
                 texture_hovered=TEX_RED_BUTTON_HOVER,
                 texture_pressed=TEX_RED_BUTTON_PRESS,
             ),
-            anchor_y="center",  # Adjust the vertical position here ("top", "center", "bottom")
+            anchor_y="center",
             align_y=-25
         )
         button_highscore = anchor.add(
@@ -42,7 +45,7 @@ class MainMenu(arcade.View):
                 texture_hovered=TEX_RED_BUTTON_HOVER,
                 texture_pressed=TEX_RED_BUTTON_PRESS,
             ),
-            anchor_y="center",  # Adjust the vertical position here ("top", "center", "bottom")
+            anchor_y="center",
             align_y=-100
         )
         button_options = anchor.add(
@@ -53,7 +56,7 @@ class MainMenu(arcade.View):
                 texture_hovered=TEX_RED_BUTTON_HOVER,
                 texture_pressed=TEX_RED_BUTTON_PRESS,
             ),
-            anchor_y="center",  # Adjust the vertical position here ("top", "center", "bottom")
+            anchor_y="center",
             align_y=-175
         )
         button_quit = anchor.add(
@@ -64,11 +67,10 @@ class MainMenu(arcade.View):
                 texture_hovered=TEX_RED_BUTTON_HOVER,
                 texture_pressed=TEX_RED_BUTTON_PRESS,
             ),
-            anchor_y="center",  # Adjust the vertical position here ("top", "center", "bottom")
+            anchor_y="center",
             align_y=-250
         )
 
-        # add a button to switch to the blue view
         @button_play.event("on_click")
         def on_click(event):
             self.manager.switch_to_game_view()

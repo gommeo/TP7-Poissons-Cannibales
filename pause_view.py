@@ -1,3 +1,9 @@
+"""
+Oscar Gomme
+Class pour avoir un écran de pause
+"""
+
+
 import arcade
 from arcade.gui import UIManager, UITextureButton, UIAnchorLayout
 
@@ -16,15 +22,11 @@ class PauseView(arcade.View):
         self.setup()
 
     def setup(self):
-        # Create a UIManager
 
         self.ui = UIManager()
 
-        # Create an anchor layout, which can be used to position widgets on screen
-
         anchor = self.ui.add(UIAnchorLayout())
 
-        # Add a button switch to the other View.
         button_resume = anchor.add(
             UITextureButton(
                 text="Resume",
@@ -33,7 +35,7 @@ class PauseView(arcade.View):
                 texture_hovered=TEX_RED_BUTTON_HOVER,
                 texture_pressed=TEX_RED_BUTTON_PRESS,
             ),
-            anchor_y="center",  # Adjust the vertical position here ("top", "center", "bottom")
+            anchor_y="center",
             align_y=-100
         )
 
@@ -45,7 +47,7 @@ class PauseView(arcade.View):
                 texture_hovered=TEX_RED_BUTTON_HOVER,
                 texture_pressed=TEX_RED_BUTTON_PRESS,
             ),
-            anchor_y="center",  # Adjust the vertical position here ("top", "center", "bottom")
+            anchor_y="center",
             align_y=-25
         )
 

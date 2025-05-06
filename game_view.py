@@ -1,3 +1,9 @@
+"""
+Oscar Gomme
+Logique du jeu
+"""
+
+
 import arcade
 from math import sqrt
 from random import randint
@@ -34,7 +40,7 @@ class GameView(arcade.View):
 
         self.last_key_right = None
         self.running = None
-        self.show_hitbox = None
+        self.show_hit_box = None
         self.last_key = None
         self.score = None
         self.lives = None
@@ -65,7 +71,7 @@ class GameView(arcade.View):
 
         self.running = True
         self.last_key_right = True
-        self.show_hitbox = False
+        self.show_hit_box = False
         self.last_key = None
         self.score = 0
         self.lives = 3
@@ -82,12 +88,9 @@ class GameView(arcade.View):
         arcade.draw_sprite(self.player)
         self.sprite_list.draw()
 
-        if self.show_hitbox:
+        if self.show_hit_box:
             self.sprite_list.draw_hit_boxes()
             self.player.draw_hit_box()
-
-        # r = arcade.rect.XYWH(100, 720, 100, 30)
-        # arcade.draw.draw_rect_filled(r, arcade.csscolor.BROWN)
 
         affichage = arcade.Text(f"Score: {self.score}", 50, 735, arcade.color.BARBIE_PINK, width=100, align="center", font_size=24)
         affichage.draw()
@@ -110,7 +113,7 @@ class GameView(arcade.View):
         for fish in self.sprite_list:
             fish.on_update()
             if arcade.check_for_collision(fish, self.player):
-                if fish.scale_fish > self.player_size and not self.show_hitbox:
+                if fish.scale_fish > self.player_size and not self.show_hit_box:
                     if fish.scale_fish > 1.5 * self.player_size:
                         self.lives -= 1
                         fish.destroy_fish()
@@ -246,4 +249,4 @@ class GameView(arcade.View):
         self.clock.turn_off()
 
     def debug(self):
-        self.show_hitbox = not self.show_hitbox
+        self.show_hit_box = not self.show_hit_box

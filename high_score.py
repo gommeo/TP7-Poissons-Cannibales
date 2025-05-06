@@ -1,3 +1,9 @@
+"""
+Oscar Gomme
+Class pour montrer les highscores
+"""
+
+
 import arcade
 from arcade.gui import UIManager, UITextureButton, UIAnchorLayout
 
@@ -22,11 +28,8 @@ class HighScore(arcade.View):
         self.highscores = self.manager.high_score
         self.text = []
 
-        # Create an anchor layout, which can be used to position widgets on screen
-
         anchor = self.ui.add(UIAnchorLayout())
 
-        # Add a button switch to the other View.
         button_back = anchor.add(
             UITextureButton(
                 text="Back",
@@ -35,7 +38,7 @@ class HighScore(arcade.View):
                 texture_hovered=TEX_RED_BUTTON_HOVER,
                 texture_pressed=TEX_RED_BUTTON_PRESS,
             ),
-            anchor_y="center",  # Adjust the vertical position here ("top", "center", "bottom")
+            anchor_y="center",
             align_y=-250
         )
 

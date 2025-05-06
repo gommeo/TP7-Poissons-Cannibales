@@ -1,3 +1,9 @@
+"""
+Oscar Gomme
+Horloge du jeu
+"""
+
+
 from arcade.clock import Clock
 
 

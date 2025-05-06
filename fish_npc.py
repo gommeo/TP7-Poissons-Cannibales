@@ -1,3 +1,9 @@
+"""
+Oscar Gomme
+Class pour créer les poissons qui nagent (autre que le joueur)
+"""
+
+
 import arcade
 from math import sqrt, floor, ceil
 from random import randint, choice
