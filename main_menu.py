@@ -32,7 +32,7 @@ class MainMenu(arcade.View):
                 texture_pressed=TEX_RED_BUTTON_PRESS,
             ),
             anchor_y="center",  # Adjust the vertical position here ("top", "center", "bottom")
-            align_y=0
+            align_y=-25
         )
         button_highscore = anchor.add(
             UITextureButton(
@@ -43,7 +43,7 @@ class MainMenu(arcade.View):
                 texture_pressed=TEX_RED_BUTTON_PRESS,
             ),
             anchor_y="center",  # Adjust the vertical position here ("top", "center", "bottom")
-            align_y=-75
+            align_y=-100
         )
         button_options = anchor.add(
             UITextureButton(
@@ -54,7 +54,7 @@ class MainMenu(arcade.View):
                 texture_pressed=TEX_RED_BUTTON_PRESS,
             ),
             anchor_y="center",  # Adjust the vertical position here ("top", "center", "bottom")
-            align_y=-150
+            align_y=-175
         )
         button_quit = anchor.add(
             UITextureButton(
@@ -65,7 +65,7 @@ class MainMenu(arcade.View):
                 texture_pressed=TEX_RED_BUTTON_PRESS,
             ),
             anchor_y="center",  # Adjust the vertical position here ("top", "center", "bottom")
-            align_y=-225
+            align_y=-250
         )
 
         # add a button to switch to the blue view
@@ -75,14 +75,15 @@ class MainMenu(arcade.View):
 
         @button_highscore.event("on_click")
         def on_click(event):
-            pass
+            self.manager.switch_to_high_score_view()
 
         @button_options.event("on_click")
         def on_click(event):
-            pass
+            self.manager.switch_to_options_view()
 
         @button_quit.event("on_click")
         def on_click(event):
+            self.manager.save_game()
             self.window.close()
 
     def on_show_view(self) -> None:
@@ -95,6 +96,8 @@ class MainMenu(arcade.View):
         pass
 
     def on_draw(self):
+        self.clear()
+
         self.ui.draw()
 
     def on_update(self, delta_time):

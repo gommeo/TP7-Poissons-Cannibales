@@ -3,20 +3,21 @@ from math import sqrt
 from random import randint
 from PIL import Image
 from fish_npc import Fish
+from clock import GameClock
 
 img = Image.open("./assets/2dfish/body_parts_and_spriter_file/icon.png")
 width, height = img.size
 
 SCREEN_WIDTH = 1164
-SCREEN_HEIGHT = 764
+SCREEN_HEIGHT = 700
 
 
 class GameView(arcade.View):
-    def __init__(self, manager, player_fish_path):
+    def __init__(self, manager, fish):
         super().__init__()
 
         self.manager = manager
-        self.player_fish_path = player_fish_path
+        self.fish = fish
         self.original_player = None
         self.normal_player = None
         self.flipped_player = None
@@ -33,21 +34,23 @@ class GameView(arcade.View):
 
         self.last_key_right = None
         self.running = None
-        self.fish_not_spawned = None
         self.show_hitbox = None
         self.last_key = None
         self.score = None
+        self.lives = None
+        self.clock = GameClock()
 
         self.setup()
 
     def setup(self):
         self.background = arcade.Sprite("./assets/Background.png")
         self.background.center_x = SCREEN_WIDTH / 2
-        self.background.center_y = SCREEN_HEIGHT / 2
+        self.background.center_y = (SCREEN_HEIGHT + 64) / 2
 
         self.player_size = 2000
-        self.flipped_player = arcade.Texture(GameView.flip_image(self.player_fish_path))
-        self.original_player = self.player_fish_path
+
+        self.flipped_player = arcade.Texture(GameView.flip_image(self.fish))
+        self.original_player = arcade.Texture(self.fish)
         self.update_size()
         self.player = self.normal_player
         self.player.center_x = SCREEN_WIDTH / 2
@@ -61,11 +64,12 @@ class GameView(arcade.View):
         self.right = False
 
         self.running = True
-        self.fish_not_spawned = 0
         self.last_key_right = True
         self.show_hitbox = False
         self.last_key = None
         self.score = 0
+        self.lives = 3
+        self.clock.reset()
 
     def update_size(self):
         self.normal_player = arcade.Sprite(self.original_player, sqrt(self.player_size / (width * height)))
@@ -82,10 +86,15 @@ class GameView(arcade.View):
             self.sprite_list.draw_hit_boxes()
             self.player.draw_hit_box()
 
-        r = arcade.rect.XYWH(100, 720, 100, 30)
-        arcade.draw.draw_rect_filled(r, arcade.csscolor.BROWN)
+        # r = arcade.rect.XYWH(100, 720, 100, 30)
+        # arcade.draw.draw_rect_filled(r, arcade.csscolor.BROWN)
 
-        affichage = arcade.Text(f"Score: {self.score}", 50, 720, arcade.color.BARBIE_PINK, width=100, align="center")
+        affichage = arcade.Text(f"Score: {self.score}", 50, 735, arcade.color.BARBIE_PINK, width=100, align="center", font_size=24)
+        affichage.draw()
+
+        affichage = arcade.Text(f"Lives: {self.lives}", 300, 735, arcade.color.BARBIE_PINK, width=100, align="center", font_size=24)
+        affichage.draw()
+        affichage = arcade.Text(f"Time: {self.clock.get_time()}", 450, 735, arcade.color.BARBIE_PINK, width=100, align="center", font_size=24)
         affichage.draw()
 
     def draw_background(self):
@@ -94,6 +103,7 @@ class GameView(arcade.View):
     def on_update(self, delta_time):
         self.move_player()
         self.check_boundaries()
+        self.clock.on_update(delta_time)
 
         total_fish = 0
 
@@ -102,8 +112,12 @@ class GameView(arcade.View):
             if arcade.check_for_collision(fish, self.player):
                 if fish.scale_fish > self.player_size and not self.show_hitbox:
                     if fish.scale_fish > 1.5 * self.player_size:
-                        print(self.player_size)
-                        self.setup()
+                        self.lives -= 1
+                        fish.destroy_fish()
+
+                        if not self.lives:
+                            self.manager.update_highscores(self.score)
+                            self.setup()
                 else:
                     self.score += round(0.1 * fish.scale_fish)
                     self.player_size += round(0.1 * fish.scale_fish)
@@ -114,9 +128,8 @@ class GameView(arcade.View):
 
         self.check_direction()
 
-        if total_fish < 200000 and len(self.sprite_list) + self.fish_not_spawned < 20 and self.running:
-            self.fish_not_spawned += 1
-            arcade.schedule_once(self.spawn_fish, randint(0, 5000)/1000)
+        if total_fish < 200000 and len(self.sprite_list) < 20 and self.running:
+            self.sprite_list.append(Fish(self.player_size, randint(0, 250)))
 
         self.score += 1
 
@@ -157,8 +170,7 @@ class GameView(arcade.View):
         self.player.center_y = y
 
     @staticmethod
-    def flip_image(image_path):
-        image = Image.open(image_path)
+    def flip_image(image):
         return image.transpose(method=Image.Transpose.FLIP_LEFT_RIGHT)
 
     def on_key_press(self, key, modifiers):
@@ -195,8 +207,6 @@ class GameView(arcade.View):
         if key == arcade.key.M and self.last_key == "g":
             self.last_key = "m"
 
-
-
     def on_key_release(self, key, modifiers):
         if key == arcade.key.W or key == arcade.key.UP:
             self.up = False
@@ -223,14 +233,17 @@ class GameView(arcade.View):
                 self.last_key_right = False
 
     def on_show_view(self):
+        self.fish = self.manager.build_fish()
+
+        self.original_player = arcade.Texture(self.fish)
+        self.flipped_player = arcade.Texture(GameView.flip_image(self.fish))
+        self.update_size()
         self.running = True
+        self.clock.turn_on()
 
     def on_hide_view(self):
         self.running = False
-
-    def spawn_fish(self, _delta_time):
-        self.sprite_list.append(Fish(self.player_size))
-        self.fish_not_spawned -= 1
+        self.clock.turn_off()
 
     def debug(self):
         self.show_hitbox = not self.show_hitbox

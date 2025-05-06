@@ -24,11 +24,12 @@ fish_textures = {
 
 
 class Fish(arcade.Sprite):
-    def __init__(self, player_size):
+    def __init__(self, player_size, distance):
         super().__init__()
         self.player_size = player_size
         self.animation_speed = None
         self.scale_fish = None
+        self.distance = distance
 
         self.change_x = None
         self.center_x = None
@@ -54,14 +55,14 @@ class Fish(arcade.Sprite):
         if self.change_x > 0:
             if self.change_x > 8:
                 self.change_x = 8
-            self.center_x = -sqrt((self.scale_fish * width) / height) / 2
+            self.center_x = -sqrt((self.scale_fish * width) / height) / 2 - self.distance * self.change_x
         if self.change_x < 0:
             if self.change_x < -8:
                 self.change_x = -8
-            self.center_x = 1164 + sqrt((self.scale_fish * width) / height) / 2
+            self.center_x = 1164 + sqrt((self.scale_fish * width) / height) / 2 - self.distance * self.change_x
 
         self.center_y = randint(ceil(sqrt((self.scale_fish * height) / width) / 2),
-                                764 - floor(sqrt((self.scale_fish * height) / width) / 2))
+                                700 - floor(sqrt((self.scale_fish * height) / width) / 2))
 
         self.colour = choice(["black", "green", "purple", "red", "yellow"])
 
